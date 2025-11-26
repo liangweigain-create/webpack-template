@@ -3,15 +3,16 @@ export default class Todo {
     #addedToProjectId;
     #dueDate;
     #priority;
+    #id;
 
     constructor({
         title,
         description = '',
         dueDate = null,
         priority = 'low',
-        addedToProjectId
+        addedToProjectId = "Project-testing"
     }) {
-        this.id = `todo-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+        this.#id = `todo-${Date.now()}-${Math.floor(Math.random()*1000)}`;
         this.title = title;
         this.description = description.trim();
         this.dueDate = dueDate;
@@ -19,7 +20,11 @@ export default class Todo {
         this.isCompleted = false;
         this.addedToProjectId = addedToProjectId;
     }
+
     //setter & getter methods
+    get id() {
+        return this.#id;
+    }
     get title() {
         return this.#title;
     }
@@ -48,6 +53,7 @@ export default class Todo {
         this.#validatePriority(val);
         this.#priority = val;
     }
+
     //数据校验私有方法
     #validateTitle(title) {
         if (typeof title !== 'string' || title.trim() === '') {
@@ -74,16 +80,29 @@ export default class Todo {
             throw new Error('priority must be either high, medium and low');
         }
     }
+
     //切换完成状态
     toggleCompleted() {
         this.isCompleted = !this.isCompleted;
     }
-// Change the method to accept an object
+
+    // Change the method to accept an object
     editTodo({ title, description, dueDate, priority }) {
         // If 'title' is provided in the object, update it. If not, keep existing.
         if (title !== undefined) this.title = title;
         if (description !== undefined) this.description = description;
         if (dueDate !== undefined) this.dueDate = dueDate;
         if (priority !== undefined) this.priority = priority;
+    }
+
+    toJSON() {
+        return {
+            id: this.id,
+            title: this.title,
+            description: this.description,
+            dueDate: this.dueDate,
+            isCompleted: this.isCompleted,
+            addedToProjectId: this.addedToProjectId
+        }
     }
 }   
