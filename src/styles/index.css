@@ -1,0 +1,311 @@
+@import url('https://fonts.googleapis.com/css2?family=Story+Script&display=swap');
+
+:root {
+    /* Color Palette */
+    --clr-primary: #37374f;       /* Indigo */
+    --clr-primary-dark: #4f46e5;
+    --clr-accent: #f59e0b;        /* Amber */
+    --clr-bg-sidebar: #f8fafc;    /* Light Grey */
+    --clr-bg-main: #9892a8;       /* White */
+    --clr-text-main: #1e293b;     /* Dark Slate */
+    --clr-text-muted: #64748b;    /* Grey Text */
+    --clr-border: #e2e8f0;
+    
+    /* Spacing */
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 2rem;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Story Script", sans-serif;
+    font-style: normal;
+}
+
+body {
+    height: 100vh;
+    color: var(--clr-text-main);
+    background-color: var(--clr-bg-main);
+}
+
+/* --- Layout (Grid) --- */
+#app {
+    display: grid;
+    height: 100vh;
+    grid-template-columns: 280px 1fr; /* Sidebar width | Main content */
+    grid-template-rows: 60px 1fr;     /* Header height | Content */
+    grid-template-areas: 
+        "header header"
+        "sidebar main";
+}
+
+/* --- Header --- */
+.app-header {
+    grid-area: header;
+    background-color: var(--clr-primary);
+    color: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    padding: 0 var(--spacing-lg);
+    box-shadow: 0 6px 8px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+.logo {
+    font-size: 1.75rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    font-style: italic;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    grid-area: sidebar;
+    background-color: var(--clr-bg-sidebar);
+    border-right: 1px solid var(--clr-border);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.projects-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--clr-text-muted);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.project-list, .defaults-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    gap: var(--spacing-sm);
+    font-size: 1.25rem;
+    box-sizing: border-box;
+}
+.active-project {
+    box-sizing: border-box;
+    padding: 2px;
+    transition: transform 0.6s ease-in-out;
+    border-bottom: solid 3px transparent;
+    color: var(--clr-primary);
+}
+.active-project:hover {
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    transform: translate(-1px, 0px) scale(1.01);
+    background-color: rgb(249, 249, 249);
+    border-radius: 5px;
+    border-bottom: solid 3px #aaa2bd;
+    box-shadow: 1px 0px 1px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Styling for the JS-generated Project Buttons */
+.project-btn {
+    width: 100%;
+    text-align: left;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: none;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--clr-text-main);
+    font-size: 1rem;
+    transition: background 0.2s;
+}
+
+.project-btn:hover {
+    background-color: #e2e8f0;
+}
+
+.project-btn.active {
+    background-color: #e0e7ff; /* Light Indigo */
+    color: var(--clr-primary);
+    font-weight: 600;
+}
+
+/* --- Main Content --- */
+.main-content {
+    grid-area: main;
+    padding: var(--spacing-lg) 4rem; /* Top/Bottom | Left/Right */
+    background-color: var(--clr-bg-main);
+    position: relative; /* For FAB positioning */
+    overflow-y: auto;   /* Scroll if too many tasks */
+}
+
+.project-header {
+    margin-bottom: var(--spacing-lg);
+}
+
+.project-header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+#task-count {
+    color: rgb(237, 237, 237);
+    font-size: 1.2rem;
+}
+
+/* --- Todo Cards (The dynamic part) --- */
+.todos-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+/* Style for individual Todo Item */
+.todo-card {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: white;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.1s;
+    /* Left border color changes based on priority via JS */
+    border-left: 5px solid transparent; 
+}
+
+.todo-card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.todo-card.priority-high { border-left-color: #ef4444; }
+.todo-card.priority-medium { border-left-color: #f59e0b; }
+.todo-card.priority-low { border-left-color: #22c55e; }
+
+.todo-card.completed {
+    opacity: 0.5;
+    text-decoration: line-through;
+}
+
+/* Spacer pushes the delete button to the right */
+.todo-content {
+    flex: 1;
+    margin-left: var(--spacing-md);
+}
+
+.todo-title { font-weight: 500; }
+.todo-date { font-size: 0.85rem; color: var(--clr-text-muted); }
+
+/* --- Buttons --- */
+.btn {
+    padding: 0.6em 1.2em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--clr-primary);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #e2e8f0;
+    color: var(--clr-text-main);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--clr-text-muted);
+}
+
+.icon-btn:hover { color: var(--clr-primary); }
+
+/* Floating Action Button (The big +) */
+.fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--clr-accent);
+    color: white;
+    font-size: 2rem;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s;
+}
+
+.fab:hover {
+    transform: scale(1.1);
+    background-color: #d97706;
+}
+
+/* --- Dialogs --- */
+dialog {
+    margin: auto;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    padding: var(--spacing-lg);
+    width: 90%;
+    max-width: 500px;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.form-group input, .form-group textarea, .form-group select {
+    padding: 0.6rem;
+    border: 1px solid var(--clr-border);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
